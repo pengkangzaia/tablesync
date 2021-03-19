@@ -11,7 +11,7 @@
         <result property="fieldExtra" column="Extra"></result>
     </resultMap>
 
-    <select id="getFieldsByTableName" parameterType="String" resultType="com.camille.tablesync.entity.Field">
+    <select id="getFieldsByTableName" parameterType="String" resultMap="field">
         DESC ${tableName}
     </select>
 
