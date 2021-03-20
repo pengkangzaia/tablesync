@@ -1,6 +1,7 @@
 package com.camille.tablesync.service;
 
-import com.camille.tablesync.dao.FieldDao;
+import com.camille.tablesync.dao.destination.DestinationFieldDao;
+import com.camille.tablesync.dao.source.SourceFieldDao;
 import com.camille.tablesync.entity.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,24 @@ import java.util.List;
 public class FieldService {
 
     @Autowired
-    private FieldDao fieldDao;
+    private SourceFieldDao sourceFieldDao;
 
-    public List<Field> getFieldInfoByTableName(String tableName) {
+    @Autowired
+    private DestinationFieldDao destinationFieldDao;
+
+    public List<Field> getSourceFieldInfoByTableName(String tableName) {
         if (tableName == null || "".equals(tableName)) {
             return new ArrayList<>();
         }
-        List<Field> res = fieldDao.getFieldsByTableName(tableName);
+        List<Field> res = sourceFieldDao.getFieldsByTableName(tableName);
+        return res;
+    }
+
+    public List<Field> getDestinationFieldInfoByTableName(String tableName) {
+        if (tableName == null || "".equals(tableName)) {
+            return new ArrayList<>();
+        }
+        List<Field> res = destinationFieldDao.getFieldsByTableName(tableName);
         return res;
     }
 

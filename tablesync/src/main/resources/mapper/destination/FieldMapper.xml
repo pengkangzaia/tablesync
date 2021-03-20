@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.camille.tablesync.dao.destination.DestinationFieldDao">
+
+    <resultMap id="field" type="com.camille.tablesync.entity.Field">
+        <result property="fieldName" column="Field"></result>
+        <result property="fieldType" column="Type"></result>
+        <result property="fieldAllowNull" column="Null"></result>
+        <result property="fieldKey" column="Key"></result>
+        <result property="fieldDefault" column="Default"></result>
+        <result property="fieldExtra" column="Extra"></result>
+    </resultMap>
+
+    <select id="getFieldsByTableName" parameterType="String" resultMap="field">
+        DESC ${tableName}
+    </select>
+
+</mapper>

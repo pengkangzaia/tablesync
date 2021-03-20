@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.camille.tablesync.dao.FieldDao">
+<mapper namespace="com.camille.tablesync.dao.source.SourceFieldDao">
 
     <resultMap id="field" type="com.camille.tablesync.entity.Field">
         <result property="fieldName" column="Field"></result>

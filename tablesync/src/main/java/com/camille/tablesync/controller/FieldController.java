@@ -16,15 +16,23 @@ import java.util.List;
  * @Date: 2021/3/19 18:01
  */
 @Controller
+@RequestMapping("/field")
 public class FieldController {
 
     @Autowired
     private FieldService fieldService;
 
     @ResponseBody
-    @RequestMapping("/fields/get")
-    public List<Field> getFieldInfo(String tableName) {
-        List<Field> res = fieldService.getFieldInfoByTableName(tableName);
+    @RequestMapping("/source/table/get")
+    public List<Field> getSourceFieldInfo(String tableName) {
+        List<Field> res = fieldService.getSourceFieldInfoByTableName(tableName);
+        return res;
+    }
+
+    @ResponseBody
+    @RequestMapping("/destination/table/get")
+    public List<Field> getDestinationFieldInfo(String tableName) {
+        List<Field> res = fieldService.getDestinationFieldInfoByTableName(tableName);
         return res;
     }
 

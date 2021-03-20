@@ -1,4 +1,4 @@
-package com.camille.tablesync.dao;
+package com.camille.tablesync.dao.source;
 
 import com.camille.tablesync.entity.Field;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,7 +13,7 @@ import java.util.List;
  * @Date: 2021/3/19 17:49
  */
 @Mapper
-public interface FieldDao {
+public interface SourceFieldDao {
 
     /**
      * 根据表名获取表中字段信息
