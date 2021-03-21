@@ -23,18 +23,24 @@ public class FieldController {
     private FieldService fieldService;
 
     @ResponseBody
-    @RequestMapping("/source/table/get")
+    @RequestMapping("/get/source")
     public List<Field> getSourceFieldInfo(String tableName) {
         List<Field> res = fieldService.getSourceFieldInfoByTableName(tableName);
         return res;
     }
 
     @ResponseBody
-    @RequestMapping("/destination/table/get")
+    @RequestMapping("/get/destination")
     public List<Field> getDestinationFieldInfo(String tableName) {
         List<Field> res = fieldService.getDestinationFieldInfoByTableName(tableName);
         return res;
     }
 
+    @ResponseBody
+    @RequestMapping("/get/diff")
+    public String getDifferentFieldInfo(String tableName) {
+        String sql = fieldService.getDiffFieldInfo(tableName);
+        return sql;
+    }
 
 }
