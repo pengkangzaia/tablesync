@@ -84,12 +84,18 @@ public class FieldService {
         for (int i = 1; i < lines.length; i++) {
             String trimLine = lines[i].trim();
             String fieldName = trimLine.substring(0, trimLine.indexOf(" "));
-            // 去除两个引号
+            // 去除两个单引号
             fieldName = fieldName.substring(1, fieldName.length() - 1);
             if (diff.contains(fieldName)) {
                 // 需要添加到修改字段的SQL
                 sql.append(" CHANGE ").append(fieldName).append(" ").append(lines[i]).append("\n");
             }
+        }
+        // 需要遵守先修改再添加的原则，防止主键冲突
+        for (int i = 1; i < lines.length; i++) {
+            String trimLine = lines[i].trim();
+            String fieldName = trimLine.substring(0, trimLine.indexOf(" "));
+            fieldName = fieldName.substring(1, fieldName.length() - 1);
             if (notExist.contains(fieldName)) {
                 // 需要添加到增加字段的SQL
                 sql.append(" ADD ").append(lines[i]).append("\n");
