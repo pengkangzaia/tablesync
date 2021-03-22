@@ -1,6 +1,5 @@
 package com.camille.tablesync;
 
-import com.camille.tablesync.entity.Field;
 import com.camille.tablesync.service.FieldService;
 import com.camille.tablesync.service.TableService;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ class TablesyncApplicationTests {
             System.out.println(tableName);
         }
         for (String tableName : tableNames) {
-            String createTableSql = tableService.getCreateTableSql(tableName);
+            String createTableSql = tableService.getCreateTableSql(tableName, true);
             System.out.println(createTableSql);
         }
     }

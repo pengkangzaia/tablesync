@@ -38,10 +38,17 @@ public class TableService {
         return tableNames;
     }
 
-    public String getCreateTableSql(String tableName) {
-        CreateTableDO tableDO = sourceTableDao.getCreateTableSql(tableName);
-        return tableDO.getCreateTable();
+    public String getCreateTableSql(String tableName, boolean isSource) {
+        if (isSource) {
+            CreateTableDO tableDO = sourceTableDao.getCreateTableSql(tableName);
+            return tableDO.getCreateTable();
+        } else {
+            CreateTableDO tableDO = destinationDao.getCreateTableSql(tableName);
+            return tableDO.getCreateTable();
+        }
     }
+
+
 
     /**
      * 返回源数据库中不存在的表的创建DDL
