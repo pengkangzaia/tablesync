@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.camille.tablesync.dao.source.SourceIndexDao">
+
+    <resultMap id="index" type="com.camille.tablesync.entity.IndexDO">
+        <result property="table" column="table"></result>
+        <result property="nonUnique" column="Non_unique"></result>
+        <result property="keyName" column="Key_name"></result>
+        <result property="columnName" column="Column_name"></result>
+        <result property="indexType" column="Index_type"></result>
+    </resultMap>
+
+
+    <select id="getIndexByTableName" resultMap="index">
+        show index from ${tableName}
+    </select>
+
+
+</mapper>
