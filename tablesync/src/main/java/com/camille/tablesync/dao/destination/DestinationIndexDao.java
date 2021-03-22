@@ -4,6 +4,8 @@ import com.camille.tablesync.entity.IndexDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @FileName: DestinationIndexDao.java
  * @Description: DestinationIndexDao.java类说明
@@ -18,6 +20,6 @@ public interface DestinationIndexDao {
      * @param tableName
      * @return
      */
-    IndexDO getIndexByTableName(@Param("tableName") String tableName);
+    List<IndexDO> getIndexByTableName(@Param("tableName") String tableName);
 
 }

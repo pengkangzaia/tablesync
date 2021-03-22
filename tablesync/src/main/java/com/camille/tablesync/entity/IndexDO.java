@@ -17,5 +17,17 @@ public class IndexDO {
     private String columnName;
     private String indexType;
 
+    public boolean isPrimaryKey() {
+        return nonUnique == 1 && "PRIMARY".equals(keyName);
+    }
+
+    public boolean isUniqueKey() {
+        return nonUnique == 1 && !"PRIMARY".equals(keyName);
+    }
+
+    public boolean isNormalKey() {
+        return nonUnique == 0;
+    }
+
 
 }

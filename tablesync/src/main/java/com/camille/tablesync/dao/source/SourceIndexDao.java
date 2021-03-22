@@ -4,6 +4,8 @@ import com.camille.tablesync.entity.IndexDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @FileName: SourceIndexDao.java
  * @Description: SourceIndexDao.java类说明
@@ -18,6 +20,6 @@ public interface SourceIndexDao {
      * @param tableName
      * @return
      */
-    IndexDO getIndexByTableName(@Param("tableName") String tableName);
+    List<IndexDO> getIndexByTableName(@Param("tableName") String tableName);
 
 }
