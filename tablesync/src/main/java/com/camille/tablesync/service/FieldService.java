@@ -101,13 +101,14 @@ public class FieldService {
                 sql.append(" ADD ").append(lines[i]).append("\n");
             }
         }
+        // 去除最后一个换行符
+        sql.deleteCharAt(sql.length() - 1);
         // 如果最后一个符号为逗号，处理最后一个逗号，改为句号
         if (sql.charAt(sql.length() - 1) == ',') {
-            sql.replace(sql.lastIndexOf(","), sql.lastIndexOf(","), ";");
-        } else {
             sql.deleteCharAt(sql.length() - 1);
-            sql.append(';');
         }
+        sql.append(';');
+
         return sql.toString();
     }
 

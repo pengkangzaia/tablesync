@@ -3,6 +3,7 @@ package com.camille.tablesync.service;
 import com.camille.tablesync.dao.destination.DestinationTableDao;
 import com.camille.tablesync.dao.source.SourceTableDao;
 import com.camille.tablesync.entity.CreateTableDO;
+import com.camille.tablesync.utils.CommentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @FileName: TableService.java
@@ -20,12 +22,6 @@ import java.util.List;
  */
 @Service
 public class TableService {
-
-    @Value("${spring.datasource.source.name}")
-    private String sourceDbName;
-
-    @Value("${spring.datasource.destination.name}")
-    private String destinationDbName;
 
     @Autowired
     private SourceTableDao sourceTableDao;
@@ -66,11 +62,33 @@ public class TableService {
             for (String destinationName : destinationNames) {
                 if (!sourceSet.contains(destinationName)) {
                     CreateTableDO createTableSql = destinationDao.getCreateTableSql(destinationName);
+                    // 插入注释
+                    sqls.add(CommentUtils.getComment(destinationName, "CREATE"));
                     sqls.add(createTableSql.getCreateTable());
+                    // 插入换行
+                    sqls.add(CommentUtils.getLineFeeds(3));
                 }
             }
         }
         return sqls;
+    }
+
+
+    /**
+     * 获取两个库中表名相同的表
+     * @param sourceDbName
+     * @param destinationDbName
+     * @return
+     */
+    public List<String> getDiffTableName(String sourceDbName, String destinationDbName) {
+        List<String> sourceTableNames = getTableNames(sourceDbName);
+        List<String> destinationTableNames = getTableNames(destinationDbName);
+        if (CollectionUtils.isEmpty(sourceTableNames) || CollectionUtils.isEmpty(destinationTableNames)) {
+            return new ArrayList<>();
+        }
+        List<String> sameTableNames = sourceTableNames.stream()
+                .filter(destinationTableNames::contains).collect(Collectors.toList());
+        return sameTableNames;
     }
 
 
