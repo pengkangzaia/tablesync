@@ -5,6 +5,7 @@ import com.camille.tablesync.dao.source.SourceIndexDao;
 import com.camille.tablesync.entity.IndexDO;
 import com.camille.tablesync.utils.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -21,6 +22,9 @@ import java.util.Map;
  */
 @Service
 public class IndexService {
+
+    @Value("${drop.enable:false}")
+    private boolean dropEnable;
 
     @Autowired
     private DestinationIndexDao destinationIndexDao;
@@ -103,7 +107,9 @@ public class IndexService {
 
     private String modifyIndex(IndexDO sIndex, IndexDO dIndex) {
         String sql = "";
-        sql = dropIndex(sIndex);
+        if (dropEnable) {
+            sql = dropIndex(sIndex);
+        }
         sql += addIndex(dIndex);
         return sql;
     }

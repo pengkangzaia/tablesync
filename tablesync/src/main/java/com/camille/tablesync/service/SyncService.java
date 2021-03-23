@@ -45,13 +45,9 @@ public class SyncService {
         List<String> diffTableName = tableService.getDiffTableName(sourceDbName, destinationDbName);
         if (!CollectionUtils.isEmpty(diffTableName)) {
             for (String name : diffTableName) {
+                // 修改字段的SQL
+                res.append(fieldService.getDiffFieldInfo(name));
                 String sql;
-                if((sql = fieldService.getDiffFieldInfo(name)) != null) {
-                    // 修改字段的SQL语句
-                    res.append(CommentUtils.getComment(name, "ALTER"));
-                    res.append(sql);
-                    res.append(CommentUtils.getLineFeeds(3));
-                }
                 if ((sql = indexService.getIndexDiffSql(name)) != null) {
                     // 修改索引的SQL语句
                     res.append(CommentUtils.getComment(name, "ALTER"));

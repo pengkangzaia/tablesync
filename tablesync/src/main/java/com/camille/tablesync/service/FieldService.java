@@ -3,12 +3,14 @@ package com.camille.tablesync.service;
 import com.camille.tablesync.dao.destination.DestinationFieldDao;
 import com.camille.tablesync.dao.source.SourceFieldDao;
 import com.camille.tablesync.entity.Field;
-import com.camille.tablesync.utils.Pair;
+import com.camille.tablesync.utils.CommentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @FileName: FieldService.java
@@ -18,6 +20,9 @@ import java.util.*;
  */
 @Service
 public class FieldService {
+
+    @Value("${drop.enable:false}")
+    private boolean dropEnable;
 
     @Autowired
     private SourceFieldDao sourceFieldDao;
@@ -48,33 +53,61 @@ public class FieldService {
         }
         List<Field> source = sourceFieldDao.getFieldsByTableName(tableName);
         List<Field> destination = destinationFieldDao.getFieldsByTableName(tableName);
-        Map<String, Field> sourceMap = new HashMap<>(source.size());
-        for (Field field : source) {
-            sourceMap.put(field.getFieldName(), field);
-        }
+        Map<String, Field> sourceMap = source.stream().collect(Collectors.toMap(Field::getFieldName, f -> f));
+        Map<String, Field> destinationMap = destination.stream().collect(Collectors.toMap(Field::getFieldName, f -> f));
+
         // 源数据库中为线上部署的旧版本，目标数据库为；本地测试的新版本。需要更新在源中不存在的字段
         Set<String> notExist = new HashSet<>();
         Set<String> diff = new HashSet<>();
-        for (Field d : destination) {
-            if (!sourceMap.containsKey(d.getFieldName())) {
-                // 1.添加不存在的字段
-                notExist.add(d.getFieldName());
-            } else {
-                // 2.修改不一致的字段
-                diff.add(d.getFieldName());
+        Set<String> needDelete = new HashSet<>();
+
+        // 如果设置了删除，生成字段的SQL
+        if (dropEnable) {
+            for (Field s : source) {
+                String sFieldName = s.getFieldName();
+                if (!destinationMap.containsKey(sFieldName)) {
+                    needDelete.add(sFieldName);
+                }
             }
         }
-        // 生成添加和修改字段的SQL
-        return handleField(tableName, notExist, diff);
+
+
+        for (Field d : destination) {
+            String dFieldName = d.getFieldName();
+            if (!sourceMap.containsKey(dFieldName)) {
+                // 1.添加不存在的字段
+                notExist.add(dFieldName);
+            } else {
+                // 2.修改不一致的字段
+                diff.add(dFieldName);
+            }
+        }
+
+        // 修改字段的SQL
+        return handleField(tableName, notExist, diff, needDelete);
     }
 
 
-
-    private String handleField(String tableName, Set<String> notExist, Set<String> diff) {
-        if (CollectionUtils.isEmpty(notExist) && CollectionUtils.isEmpty(diff)) {
+    private String handleField(String tableName, Set<String> notExist, Set<String> diff, Set<String> needDelete) {
+        if (CollectionUtils.isEmpty(notExist) && CollectionUtils.isEmpty(diff) && CollectionUtils.isEmpty(needDelete)) {
             return null;
         }
-        StringBuilder sql = new StringBuilder("ALTER TABLE " + tableName + " \n");
+
+        StringBuilder dropSql = new StringBuilder();
+        if (dropEnable) {
+            dropSql.append(CommentUtils.getComment(tableName, "DROP"));
+            dropSql.append("ALTER TABLE ").append(tableName).append(" \n");
+            for (String fieldName : needDelete) {
+                dropSql.append(" DROP ").append(fieldName).append(",\n");
+            }
+            // 处理末尾字符, 去除最后一个逗号和换行符
+            dropSql.delete(dropSql.lastIndexOf(","), dropSql.length()).append(";");
+            dropSql.append(CommentUtils.getLineFeeds(3));
+        }
+
+        StringBuilder modifySql = new StringBuilder();
+        modifySql.append(CommentUtils.getComment(tableName, "ALTER"));
+        modifySql.append("ALTER TABLE ").append(tableName).append(" \n");
         String createTableSql = tableService.getCreateTableSql(tableName, false);
         int firstLeftBracket = createTableSql.indexOf("(");
         int fistRightBracket = createTableSql.lastIndexOf(")");
@@ -88,7 +121,7 @@ public class FieldService {
             fieldName = fieldName.substring(1, fieldName.length() - 1);
             if (diff.contains(fieldName)) {
                 // 需要添加到修改字段的SQL
-                sql.append(" CHANGE ").append(fieldName).append(" ").append(lines[i]).append("\n");
+                modifySql.append(" CHANGE ").append(fieldName).append(" ").append(lines[i]).append("\n");
             }
         }
         // 需要遵守先修改再添加的原则，防止主键冲突
@@ -98,18 +131,19 @@ public class FieldService {
             fieldName = fieldName.substring(1, fieldName.length() - 1);
             if (notExist.contains(fieldName)) {
                 // 需要添加到增加字段的SQL
-                sql.append(" ADD ").append(lines[i]).append("\n");
+                modifySql.append(" ADD ").append(lines[i]).append("\n");
             }
         }
         // 去除最后一个换行符
-        sql.deleteCharAt(sql.length() - 1);
+        modifySql.deleteCharAt(modifySql.length() - 1);
         // 如果最后一个符号为逗号，处理最后一个逗号，改为句号
-        if (sql.charAt(sql.length() - 1) == ',') {
-            sql.deleteCharAt(sql.length() - 1);
+        if (modifySql.charAt(modifySql.length() - 1) == ',') {
+            modifySql.deleteCharAt(modifySql.length() - 1);
         }
-        sql.append(';');
+        modifySql.append(';');
+        modifySql.append(CommentUtils.getLineFeeds(3));
 
-        return sql.toString();
+        return dropSql.append(modifySql).toString();
     }
 
     /**
