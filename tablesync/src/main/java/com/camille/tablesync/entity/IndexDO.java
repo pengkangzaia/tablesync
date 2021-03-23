@@ -12,21 +12,24 @@ import lombok.Data;
 public class IndexDO {
 
     private String table;
+    /**
+     * 是否为唯一索引，0是，1不是
+     */
     private Short nonUnique;
     private String keyName;
     private String columnName;
     private String indexType;
 
     public boolean isPrimaryKey() {
-        return nonUnique == 1 && "PRIMARY".equals(keyName);
+        return nonUnique == 0 && "PRIMARY".equals(keyName);
     }
 
     public boolean isUniqueKey() {
-        return nonUnique == 1 && !"PRIMARY".equals(keyName);
+        return nonUnique == 0 && !"PRIMARY".equals(keyName);
     }
 
     public boolean isNormalKey() {
-        return nonUnique == 0;
+        return nonUnique == 1;
     }
 
 

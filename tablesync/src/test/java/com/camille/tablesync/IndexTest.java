@@ -3,6 +3,7 @@ package com.camille.tablesync;
 import com.camille.tablesync.dao.destination.DestinationIndexDao;
 import com.camille.tablesync.dao.source.SourceIndexDao;
 import com.camille.tablesync.entity.IndexDO;
+import com.camille.tablesync.service.IndexService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,9 @@ public class IndexTest {
     @Autowired
     private SourceIndexDao sourceIndexDao;
 
+    @Autowired
+    private IndexService indexService;
+
     @Test
     public void getIndexTest() {
         String tableName = "user";
@@ -40,6 +44,13 @@ public class IndexTest {
                 System.out.println(index);
             }
         }
+    }
+
+    @Test
+    public void getDiffIndexTest() {
+        String tableName = "user";
+        String indexDiffSql = indexService.getIndexDiffSql(tableName);
+        System.out.println(indexDiffSql);
     }
 
 }
