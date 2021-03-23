@@ -86,17 +86,17 @@ public class IndexService {
         return sql.toString();
     }
 
-    private void getNameIndexMap(Map<String, IndexDO> IndexMap, List<IndexDO> Index) {
-        for (IndexDO d : Index) {
+    private void getNameIndexMap(Map<String, IndexDO> indexMap, List<IndexDO> index) {
+        for (IndexDO d : index) {
             String key = d.getKeyName();
-            if (IndexMap.containsKey(key)) {
+            if (indexMap.containsKey(key)) {
                 // 更新列名
-                IndexDO indexDO = IndexMap.get(key);
+                IndexDO indexDO = indexMap.get(key);
                 String newColumn = indexDO.getColumnName() + "," + d.getColumnName();
                 indexDO.setColumnName(newColumn);
-                IndexMap.put(key, indexDO);
+                indexMap.put(key, indexDO);
             } else {
-                IndexMap.put(key, d);
+                indexMap.put(key, d);
             }
         }
     }
