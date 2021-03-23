@@ -5,7 +5,6 @@ import com.camille.tablesync.dao.source.SourceTableDao;
 import com.camille.tablesync.entity.CreateTableDO;
 import com.camille.tablesync.utils.CommentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -30,27 +29,26 @@ public class TableService {
     private DestinationTableDao destinationDao;
 
     public List<String> getTableNames(String dbName) {
-        List<String> tableNames = sourceTableDao.getTableNames(dbName);
-        return tableNames;
+        return sourceTableDao.getTableNames(dbName);
     }
 
     public String getCreateTableSql(String tableName, boolean isSource) {
+        CreateTableDO tableDO;
         if (isSource) {
-            CreateTableDO tableDO = sourceTableDao.getCreateTableSql(tableName);
-            return tableDO.getCreateTable();
+            tableDO = sourceTableDao.getCreateTableSql(tableName);
         } else {
-            CreateTableDO tableDO = destinationDao.getCreateTableSql(tableName);
-            return tableDO.getCreateTable();
+            tableDO = destinationDao.getCreateTableSql(tableName);
         }
+        return tableDO.getCreateTable();
     }
 
 
 
     /**
      * 返回源数据库中不存在的表的创建DDL
-     * @param sourceDbName
-     * @param destinationDbName
-     * @return
+     * @param sourceDbName 源数据库名
+     * @param destinationDbName 目标数据库名
+     * @return 源数据库中不存在的表的创建DDL
      */
     public List<String> getDiffTableSql(String sourceDbName, String destinationDbName) {
         List<String> sourceNames = getTableNames(sourceDbName);
@@ -76,9 +74,9 @@ public class TableService {
 
     /**
      * 获取两个库中表名相同的表
-     * @param sourceDbName
-     * @param destinationDbName
-     * @return
+     * @param sourceDbName 源数据库名
+     * @param destinationDbName 目标数据库名
+     * @return 两个库中相同的表名
      */
     public List<String> getDiffTableName(String sourceDbName, String destinationDbName) {
         List<String> sourceTableNames = getTableNames(sourceDbName);

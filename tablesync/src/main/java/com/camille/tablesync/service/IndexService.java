@@ -130,7 +130,7 @@ public class IndexService {
     }
 
     private String dropIndex(IndexDO indexDO) {
-        String sql = "";
+        String sql;
         if (indexDO == null) { return null; }
         if (indexDO.isPrimaryKey()) {
             sql = "ALTER TABLE " + indexDO.getTable() + " DROP PRIMARY KEY;\n";

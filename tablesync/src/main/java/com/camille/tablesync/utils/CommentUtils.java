@@ -37,8 +37,8 @@ public class CommentUtils {
      * Mac系统里，每行结尾是"<回车>"。
      * 一个直接后果是，Unix/Mac系统下的文件在Windows里打开的话，所有文字会变成一行；
      * 而Windows里的文件在Unix/Mac下打开的话，在每行的结尾可能会多出一个^M符号。
-     * @param n
-     * @return
+     * @param n 换行行数
+     * @return n个换行
      */
     public static String getLineFeeds(int n) {
         if (n <= 0) {
