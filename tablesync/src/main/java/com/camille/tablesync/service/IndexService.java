@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @FileName: IndexService.java
@@ -40,16 +39,11 @@ public class IndexService {
      * @return 同步索引的SQL
      */
     public String getIndexDiffSql(String tableName) {
-        // todo 处理组合索引的特殊情况
+
         List<IndexDO> sIndex = sourceIndexDao.getIndexByTableName(tableName);
         List<IndexDO> dIndex = destinationIndexDao.getIndexByTableName(tableName);
-        Map<String, IndexDO> sIndexMap = sIndex.stream()
-                .collect(Collectors.toMap(IndexDO::getKeyName, i -> i));
-        Map<String, IndexDO> dIndexMap = dIndex.stream()
-                .collect(Collectors.toMap(IndexDO::getKeyName, i -> i));
+
         StringBuilder sql = new StringBuilder();
-
-
         if (CollectionUtils.isEmpty(sIndex) && CollectionUtils.isEmpty(dIndex)) {
             return sql.toString();
         }
@@ -59,6 +53,13 @@ public class IndexService {
             }
             return sql.toString();
         }
+
+        // 处理组合索引的特殊情况
+        Map<String, IndexDO> sIndexMap = new HashMap<>(sIndex.size());
+        Map<String, IndexDO> dIndexMap = new HashMap<>(dIndex.size());
+        getNameIndexMap(sIndexMap, sIndex);
+        getNameIndexMap(dIndexMap, dIndex);
+
 
         // 添加不存在的索引
         HashSet<IndexDO> notExist = new HashSet<>();
@@ -83,6 +84,21 @@ public class IndexService {
         }
 
         return sql.toString();
+    }
+
+    private void getNameIndexMap(Map<String, IndexDO> IndexMap, List<IndexDO> Index) {
+        for (IndexDO d : Index) {
+            String key = d.getKeyName();
+            if (IndexMap.containsKey(key)) {
+                // 更新列名
+                IndexDO indexDO = IndexMap.get(key);
+                String newColumn = indexDO.getColumnName() + "," + d.getColumnName();
+                indexDO.setColumnName(newColumn);
+                IndexMap.put(key, indexDO);
+            } else {
+                IndexMap.put(key, d);
+            }
+        }
     }
 
     private String modifyIndex(IndexDO sIndex, IndexDO dIndex) {

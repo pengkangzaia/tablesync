@@ -6,6 +6,7 @@
         <result property="table" column="table"></result>
         <result property="nonUnique" column="Non_unique"></result>
         <result property="keyName" column="Key_name"></result>
+        <result property="seqInIndex" column="Seq_in_index"></result>
         <result property="columnName" column="Column_name"></result>
         <result property="indexType" column="Index_type"></result>
     </resultMap>

@@ -17,6 +17,10 @@ public class IndexDO {
      */
     private Short nonUnique;
     private String keyName;
+    /**
+     * 在组合索引中的位置，如果不是组合索引的一部分则是1
+     */
+    private Integer seqInIndex;
     private String columnName;
     private String indexType;
 
