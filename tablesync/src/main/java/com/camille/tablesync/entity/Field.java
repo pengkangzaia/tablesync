@@ -18,4 +18,12 @@ public class Field {
     private String fieldDefault;
     private String fieldExtra;
 
+    public Field(String fieldName, String fieldType, String fieldAllowNull, String fieldKey, String fieldDefault, String fieldExtra) {
+        this.fieldName = fieldName;
+        this.fieldType = fieldType;
+        this.fieldAllowNull = fieldAllowNull;
+        this.fieldKey = fieldKey;
+        this.fieldDefault = fieldDefault;
+        this.fieldExtra = fieldExtra;
+    }
 }
